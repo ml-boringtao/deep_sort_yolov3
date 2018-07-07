@@ -15,14 +15,15 @@ from keras import backend as K
 from keras.models import load_model
 from PIL import Image, ImageFont, ImageDraw
 
-from yolo3.model import yolo_eval
-from yolo3.utils import letterbox_image
+from ..deep_sort_yolov3.yolo3.model import yolo_eval
+from ..deep_sort_yolov3.yolo3.utils import letterbox_image
 
 class YOLO(object):
     def __init__(self):
-        self.model_path = 'model_data/yolo.h5'
-        self.anchors_path = 'model_data/yolo_anchors.txt'
-        self.classes_path = 'model_data/coco_classes.txt'
+        self.location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        self.model_path = os.path.join(self.location, 'model_data/yolo.h5')
+        self.anchors_path = os.path.join(self.location, 'model_data/yolo_anchors.txt')
+        self.classes_path = os.path.join(self.location, 'model_data/coco_classes.txt')
         self.score = 0.5
         self.iou = 0.5
         self.class_names = self._get_class()
@@ -97,8 +98,8 @@ class YOLO(object):
         return_boxs = []
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
-            if predicted_class != 'person' :
-                continue
+            #if predicted_class != 'car' and  predicted_class != 'bus' and  predicted_class != 'motorbike' and  predicted_class != 'person':
+            #    continue
             box = out_boxes[i]
            # score = out_scores[i]  
             x = int(box[1])  
@@ -111,7 +112,7 @@ class YOLO(object):
             if y < 0 :
                 h = h + y
                 y = 0 
-            return_boxs.append([x,y,w,h])
+            return_boxs.append([x,y,w,h, out_scores[i], out_classes[i]])
 
         return return_boxs
 
