@@ -40,7 +40,7 @@ class Track:
     feature : Optional[ndarray]
         Feature vector of the detection this track originates from. If not None,
         this feature is added to the `features` cache.
-
+    
     Attributes
     ----------
     mean : ndarray
@@ -60,7 +60,6 @@ class Track:
     features : List[ndarray]
         A cache of features. On each measurement update, the associated feature
         vector is added to this list.
-
     """
 
     def __init__(self, mean, covariance, track_id, n_init, max_age,
@@ -143,6 +142,8 @@ class Track:
         self.time_since_update = 0
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
+            
+        self.detection = detection
 
     def mark_missed(self):
         """Mark this track as missed (no association at the current time step).
